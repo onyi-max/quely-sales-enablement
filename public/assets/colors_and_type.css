@@ -1,0 +1,322 @@
+/* ============================================================
+   Quely Design System — Foundations v1.0
+   Source of truth for design tokens (colors, type, spacing,
+   radii, elevation, motion) + base resets and semantic
+   helper classes. Drop-in: <link rel="stylesheet" href="…">
+   ============================================================ */
+
+/* Inter — used for BOTH UI and display (variable, opsz + wght axes).
+   NOTE: the design bundle self-hosts Inter from ./fonts/*.ttf. Those TTFs
+   exceed the design download API's 256 KiB cap and could not be retrieved
+   intact here, so we load the identical Inter family from the Google Fonts
+   CDN instead (same typeface, same weights). Drop the self-hosted TTFs back
+   into ./fonts/ and restore the @font-face block for a fully offline build. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+/* JetBrains Mono — code only. CDN fallback while we self-host. */
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap");
+
+/* ────────────────────────────────────────────────────────────
+   1. TOKEN LAYER
+   ──────────────────────────────────────────────────────────── */
+:root {
+  --quely-purple-50:  #F5EEFB;
+  --quely-purple-100: #E3D6F5;
+  --quely-purple-200: #C9ADEA;
+  --quely-purple-300: #AB84E1;
+  --quely-purple-400: #9D6FD9;
+  --quely-purple-500: #8F5BD7;
+  --quely-purple-600: #7847BD;
+  --quely-purple-700: #6A37AE;
+  --quely-purple-800: #5C28A4;
+  --quely-purple-900: #532494;
+
+  --quely-white:    #FFFFFF;
+  --quely-gray-50:  #F9FAFB;
+  --quely-gray-100: #F3F4F6;
+  --quely-gray-200: #E5E7EB;
+  --quely-gray-300: #D1D5DB;
+  --quely-gray-400: #9CA3AF;
+  --quely-gray-500: #6B7280;
+  --quely-gray-600: #4B5563;
+  --quely-gray-700: #374151;
+  --quely-gray-800: #1F2937;
+  --quely-gray-900: #111827;
+  --quely-black:    #03070F;
+
+  --quely-success-50:  #F0FDF4;
+  --quely-success-100: #DCFCE7;
+  --quely-success-200: #BBF7D0;
+  --quely-success-300: #86EFAC;
+  --quely-success-500: #16A34A;
+  --quely-success-600: #15803D;
+  --quely-success-700: #166534;
+
+  --quely-danger-50:  #FEF2F2;
+  --quely-danger-100: #FEE2E2;
+  --quely-danger-200: #FECACA;
+  --quely-danger-300: #FCA5A5;
+  --quely-danger-500: #EF4444;
+  --quely-danger-600: #DC2626;
+  --quely-danger-700: #991B1B;
+
+  --quely-warning-50:  #FFFBEB;
+  --quely-warning-100: #FEF3C7;
+  --quely-warning-200: #FDE68A;
+  --quely-warning-300: #FCD34D;
+  --quely-warning-500: #D97706;
+  --quely-warning-600: #B45309;
+  --quely-warning-700: #92400E;
+
+  --quely-info-50:  #EEF2FF;
+  --quely-info-100: #E0E7FF;
+  --quely-info-200: #C7D2FE;
+  --quely-info-300: #A5B4FC;
+  --quely-info-400: #6366F1;
+  --quely-info-500: #4F46E5;
+  --quely-info-600: #4338CA;
+  --quely-info-700: #3730A3;
+
+  --fg-default:   var(--quely-gray-900);
+  --fg-strong:    var(--quely-black);
+  --fg-muted:     var(--quely-gray-600);
+  --fg-subtle:    var(--quely-gray-500);
+  --fg-disabled:  var(--quely-gray-400);
+  --fg-on-brand:  var(--quely-white);
+  --fg-on-inverse:var(--quely-white);
+  --fg-link:      var(--quely-purple-800);
+  --fg-link-hover:var(--quely-purple-700);
+  --fg-danger:    var(--quely-danger-600);
+  --fg-success:   var(--quely-success-600);
+
+  --primary:        var(--quely-gray-900);
+  --primary-hover:  var(--quely-gray-800);
+  --primary-active: var(--quely-gray-700);
+  --on-primary:     var(--quely-white);
+
+  --bg-default:   var(--quely-white);
+  --bg-muted:     var(--quely-gray-50);
+  --bg-subtle:    var(--quely-gray-100);
+  --bg-inverse:   var(--quely-black);
+
+  --surface-1:    var(--quely-white);
+  --surface-2:    var(--quely-gray-50);
+  --surface-3:    var(--quely-gray-100);
+  --surface-overlay: rgba(3, 7, 18, 0.55);
+  --surface-brand-soft: var(--quely-purple-50);
+
+  --border-default: var(--quely-gray-200);
+  --border-strong:  var(--quely-gray-300);
+  --border-muted:   var(--quely-gray-100);
+  --border-brand:   var(--quely-purple-300);
+  --border-danger:  var(--quely-danger-500);
+
+  --border-width-thin:    1px;
+  --border-width-default: 1px;
+  --border-width-thick:   2px;
+
+  --brand:        var(--quely-purple-500);
+  --brand-strong: var(--quely-purple-800);
+  --brand-soft:   var(--quely-purple-100);
+  --brand-ring:   var(--quely-purple-300);
+  --focus-ring:   var(--quely-purple-300);
+
+  --radius-none: 0;
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-3xl:  32px;
+  --radius-pill: 9999px;
+
+  --shadow-none:     none;
+  --shadow-hairline: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  --shadow-xs:       0 1px 2px 0 rgba(3, 7, 18, 0.05);
+  --shadow-sm:       0 1px 2px 0 rgba(3, 7, 18, 0.10);
+  --shadow-md:       0 4px 8px -2px rgba(3, 7, 18, 0.10),
+                     0 2px 4px -2px rgba(3, 7, 18, 0.06);
+  --shadow-lg:       0 12px 24px -6px rgba(3, 7, 18, 0.12),
+                     0 4px 8px -4px rgba(3, 7, 18, 0.08);
+  --shadow-xl:       0 24px 48px -12px rgba(3, 7, 18, 0.18);
+  --shadow-2xl:      0 40px 80px -20px rgba(3, 7, 18, 0.25);
+  --shadow-inset:    inset 0 2px 0 0 rgba(3, 7, 18, 0.05);
+
+  --ring-focus:        0 0 0 2px var(--focus-ring);
+  --ring-focus-danger: 0 0 0 2px rgba(239, 68, 68, 0.50);
+  --ring-focus-offset: 0 0 0 2px #fff, 0 0 0 4px var(--focus-ring);
+
+  --opacity-disabled: 0.40;
+  --opacity-hover:    0.92;
+  --opacity-loading:  0.65;
+  --opacity-scrim:    0.55;
+
+  --space-0:   0;
+  --space-px:  1px;
+  --space-0-5: 2px;
+  --space-1:   4px;
+  --space-1-5: 6px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-7:   28px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+  --space-20:  80px;
+  --space-24:  96px;
+  --space-32: 128px;
+
+  --size-control-xs: 24px;
+  --size-control-sm: 28px;
+  --size-control-md: 32px;
+  --size-control-lg: 36px;
+  --size-control-xl: 40px;
+  --size-control-2xl: 48px;
+
+  --size-icon-xs: 12px;
+  --size-icon-sm: 14px;
+  --size-icon-md: 16px;
+  --size-icon-lg: 20px;
+  --size-icon-xl: 24px;
+  --size-icon-2xl: 32px;
+
+  --layout-navbar:  56px;
+  --layout-sidebar: 240px;
+  --layout-sidebar-collapsed: 64px;
+  --layout-ai-rail: 340px;
+  --layout-toast-max: 360px;
+
+  --z-base:     0;
+  --z-elevated: 10;
+  --z-sticky:   100;
+  --z-dropdown: 500;
+  --z-overlay:  700;
+  --z-dialog:   800;
+  --z-toast:    900;
+  --z-tooltip:  1000;
+
+  --duration-instant: 80ms;
+  --duration-quick:   140ms;
+  --duration-snappy:  200ms;
+  --duration-smooth:  320ms;
+  --duration-slow:    500ms;
+
+  --ease-standard:    cubic-bezier(0.2, 0, 0.0, 1);
+  --ease-emphasized:  cubic-bezier(0.3, 0, 0, 1);
+  --ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ease-linear:      linear;
+
+  --transition-fast:  all var(--duration-quick) var(--ease-standard);
+  --transition-color: background-color var(--duration-quick) var(--ease-standard),
+                      color var(--duration-quick) var(--ease-standard),
+                      border-color var(--duration-quick) var(--ease-standard),
+                      box-shadow var(--duration-quick) var(--ease-standard);
+
+  --font-sans:    "Inter", ui-sans-serif, system-ui, -apple-system,
+                  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", "Inconsolata", ui-monospace, SFMono-Regular,
+                  Menlo, Consolas, monospace;
+  --font-numeric: "Inter", "Digital Numbers", monospace;
+
+  --text-xs:    11px;
+  --text-sm:    12px;
+  --text-base:  14px;
+  --text-md:    16px;
+  --text-lg:    18px;
+  --text-xl:    20px;
+  --text-2xl:   24px;
+  --text-3xl:   30px;
+  --text-4xl:   32px;
+  --text-5xl:   40px;
+  --text-6xl:   56px;
+  --text-7xl:   72px;
+
+  --weight-light:     300;
+  --weight-regular:   400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
+  --weight-extrabold: 800;
+
+  --leading-flush: 1.00;
+  --leading-tight: 1.15;
+  --leading-snug:  1.30;
+  --leading-base:  1.45;
+  --leading-relaxed: 1.55;
+  --leading-loose: 1.60;
+
+  --tracking-tighter: -0.03em;
+  --tracking-tight:   -0.02em;
+  --tracking-base:    0;
+  --tracking-wide:    0.04em;
+  --tracking-wider:   0.06em;
+
+  --bp-sm:  640px;
+  --bp-md:  768px;
+  --bp-lg:  1024px;
+  --bp-xl:  1280px;
+  --bp-2xl: 1536px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   2. RESET & BASE
+   ──────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
+  color: var(--fg-default);
+  background: var(--bg-default);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button { cursor: pointer; }
+button:disabled, [aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+}
+
+a {
+  color: var(--fg-link);
+  text-decoration: none;
+  transition: color var(--duration-quick) var(--ease-standard);
+}
+a:hover { color: var(--fg-link-hover); }
+
+::selection {
+  background: var(--quely-purple-200);
+  color: var(--quely-purple-900);
+}
+
+:focus { outline: none; }
+:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

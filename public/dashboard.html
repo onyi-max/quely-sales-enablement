@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quely — Sales Dashboard</title>
+<link rel="icon" href="/assets/quely-mark-brand.svg">
+<link rel="stylesheet" href="/assets/colors_and_type.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+  body { margin:0; background:#F9FAFB; }
+  * { box-sizing:border-box; }
+  input, select, textarea { font-family:'Inter',sans-serif; }
+  ::selection { background:#E4D3F5; }
+  .navbtn { display:flex; align-items:center; gap:11px; width:100%; text-align:left; font-family:inherit; font-size:15px; font-weight:600; padding:11px 12px; border:none; border-radius:10px; cursor:pointer; background:transparent; color:rgba(255,255,255,.6); }
+  .navbtn.active { background:rgba(143,91,215,.22); color:#fff; }
+</style>
+</head>
+<body>
+<div style="display:flex; height:100vh; font-family:'Inter',sans-serif; color:#111827; overflow:hidden;">
+
+  <!-- SIDEBAR -->
+  <div style="flex:none; width:236px; background:#03070F; padding:24px 18px; display:flex; flex-direction:column; gap:6px;">
+    <img src="/assets/quely-logo-dark.svg" alt="Quely" style="height:24px; margin:6px 8px 22px;">
+    <div style="font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.38); padding:0 10px; margin-bottom:8px;">Sales enablement</div>
+    <button class="navbtn active" data-nav="prospects"><i class="ph ph-users-three" style="font-size:20px;"></i>Prospects</button>
+    <button class="navbtn" data-nav="analytics"><i class="ph ph-chart-bar" style="font-size:20px;"></i>Analytics</button>
+    <button class="navbtn" data-nav="questions"><i class="ph ph-chat-teardrop-text" style="font-size:20px;"></i>Questions <span id="qBadge" style="margin-left:auto; font-size:12px; font-weight:700; min-width:20px; height:20px; padding:0 6px; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; background:rgba(255,255,255,.12); color:rgba(255,255,255,.5);">0</span></button>
+    <div style="margin-top:auto; padding:14px 10px 4px; border-top:1px solid rgba(255,255,255,.08);">
+      <div style="font-size:12px; color:rgba(255,255,255,.4); line-height:1.5;">Shared database backend. Prospect links (<span style="color:rgba(255,255,255,.6);">/v/&lt;token&gt;</span>) need no login.</div>
+      <button id="logout" style="margin-top:12px; background:none; border:none; color:rgba(255,255,255,.4); font-size:12px; font-weight:600; cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:6px;"><i class="ph ph-sign-out"></i>Sign out</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+
+    <!-- topbar -->
+    <div style="flex:none; height:64px; border-bottom:1px solid #E5E7EB; background:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 28px;">
+      <div id="viewTitle" style="font-size:19px; font-weight:700;">Prospects</div>
+      <div style="position:relative;">
+        <button id="notifToggle" style="position:relative; background:#fff; border:1px solid #E5E7EB; border-radius:10px; width:42px; height:42px; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="ph ph-bell" style="font-size:20px; color:#374151;"></i><span id="notifBadge" style="display:none; position:absolute; top:-5px; right:-5px; background:#DC2626; color:#fff; font-size:11px; font-weight:700; min-width:18px; height:18px; padding:0 4px; border-radius:9999px; align-items:center; justify-content:center;">0</span></button>
+        <div id="notifPanel" style="display:none; position:absolute; right:0; top:50px; width:360px; background:#fff; border:1px solid #E5E7EB; border-radius:14px; box-shadow:0 16px 40px -10px rgba(3,7,18,.28); z-index:40; overflow:hidden;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:15px 18px; border-bottom:1px solid #F3F4F6;"><div style="font-size:14px; font-weight:700;">Notifications</div><button id="notifClear" style="background:none; border:none; color:#8F5BD7; font-size:13px; font-weight:600; cursor:pointer;">Clear</button></div>
+          <div id="notifList" style="max-height:340px; overflow:auto;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- scroll content -->
+    <div style="flex:1; min-height:0; overflow:auto; padding:28px;">
+
+      <!-- ============ PROSPECTS ============ -->
+      <div data-view="prospects">
+        <div style="display:flex; gap:28px; align-items:flex-start;">
+          <div style="flex:1; min-width:0;">
+            <!-- create form -->
+            <div style="background:#fff; border:1px solid #E5E7EB; border-radius:16px; padding:22px 24px; margin-bottom:22px; box-shadow:0 1px 2px rgba(3,7,18,.05);">
+              <div style="font-size:16px; font-weight:700; margin-bottom:16px;">New prospect link</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div><label style="display:block; font-size:12px; font-weight:600; color:#6B7280; margin-bottom:6px;">Name</label><input id="fName" placeholder="Sarah Chen" style="width:100%; font-size:14px; color:#111827; padding:10px 12px; border:1px solid #D1D5DB; border-radius:9px; background:#fff;"></div>
+                <div><label style="display:block; font-size:12px; font-weight:600; color:#6B7280; margin-bottom:6px;">Company</label><input id="fCompany" placeholder="Acme" style="width:100%; font-size:14px; color:#111827; padding:10px 12px; border:1px solid #D1D5DB; border-radius:9px; background:#fff;"></div>
+                <div><label style="display:block; font-size:12px; font-weight:600; color:#6B7280; margin-bottom:6px;">Email</label><input id="fEmail" placeholder="sarah@acme.com" style="width:100%; font-size:14px; color:#111827; padding:10px 12px; border:1px solid #D1D5DB; border-radius:9px; background:#fff;"></div>
+                <div><label style="display:block; font-size:12px; font-weight:600; color:#6B7280; margin-bottom:6px;">Role</label><input id="fRole" placeholder="VP Engineering" style="width:100%; font-size:14px; color:#111827; padding:10px 12px; border:1px solid #D1D5DB; border-radius:9px; background:#fff;"></div>
+                <div><label style="display:block; font-size:12px; font-weight:600; color:#6B7280; margin-bottom:6px;">Pain angle</label>
+                  <select id="fPain" style="width:100%; font-size:14px; color:#111827; padding:10px 12px; border:1px solid #D1D5DB; border-radius:9px; background:#fff;">
+                    <option value="">Select…</option>
+                    <option value="Jira context">Jira context</option>
+                    <option value="EM visibility">EM visibility</option>
+                    <option value="Orbit / AI">Orbit / AI</option>
+                    <option value="Customer context">Customer context</option>
+                    <option value="Async discussion">Async discussion</option>
+                    <option value="Integrations">Integrations</option>
+                  </select>
+                </div>
+                <div style="display:flex; align-items:flex-end;"><button id="createBtn" style="width:100%; background:#5C28A4; color:#fff; font-size:15px; font-weight:600; padding:11px; border:none; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px;"><i class="ph-bold ph-link-simple"></i>Generate link</button></div>
+              </div>
+              <div id="createdBanner" style="display:none; margin-top:16px; background:#F5EEFB; border:1px solid #E4D3F5; border-radius:12px; padding:14px 16px; align-items:center; gap:12px;">
+                <i class="ph-fill ph-check-circle" style="font-size:22px; color:#5C28A4;"></i>
+                <div style="flex:1; min-width:0;"><div style="font-size:13px; font-weight:600; color:#5C28A4; margin-bottom:2px;">Link ready for <span id="createdName"></span></div><div id="createdPretty" style="font-size:13px; color:#4B5563; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div></div>
+                <a id="createdOpen" href="#" target="_blank" rel="noopener" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; gap:7px; background:#fff; border:1px solid #D1D5DB; border-radius:8px; padding:8px 14px; font-size:13px; font-weight:600; color:#111827;"><i class="ph ph-arrow-square-out"></i>Open</span></a>
+                <button id="copyBtn" style="background:#111827; color:#fff; border:none; border-radius:8px; padding:9px 14px; font-size:13px; font-weight:600; cursor:pointer;">Copy</button>
+              </div>
+            </div>
+
+            <!-- list -->
+            <div style="background:#fff; border:1px solid #E5E7EB; border-radius:16px; overflow:hidden; box-shadow:0 1px 2px rgba(3,7,18,.05);">
+              <div style="display:grid; grid-template-columns:1.6fr .9fr .7fr .7fr 1fr auto; gap:12px; padding:13px 20px; border-bottom:1px solid #F3F4F6; font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:#9CA3AF;">
+                <div>Prospect</div><div>Status</div><div>Visits</div><div>Time</div><div>Most viewed</div><div></div>
+              </div>
+              <div id="prospectList"></div>
+            </div>
+          </div>
+
+          <!-- detail panel -->
+          <div style="flex:none; width:360px;">
+            <div id="detailPanel"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ ANALYTICS ============ -->
+      <div data-view="analytics" style="display:none;">
+        <div id="analyticsRoot"></div>
+      </div>
+
+      <!-- ============ QUESTIONS ============ -->
+      <div data-view="questions" style="display:none;">
+        <div id="questionsRoot" style="max-width:820px; display:flex; flex-direction:column; gap:12px;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

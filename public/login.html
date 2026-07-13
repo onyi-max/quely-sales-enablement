@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · Quely Sales</title>
+<link rel="stylesheet" href="/assets/colors_and_type.css">
+<link rel="icon" href="/assets/quely-mark-brand.svg">
+<style>
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#03070F; font-family:'Inter',sans-serif; }
+  .bg { position:fixed; inset:0; background:radial-gradient(closest-side at 50% 35%, rgba(143,91,215,.35), rgba(143,91,215,0)); filter:blur(60px); pointer-events:none; }
+  .card { position:relative; width:100%; max-width:380px; background:#0f1524; border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:34px 30px; box-shadow:0 40px 90px -30px rgba(0,0,0,.8); }
+  .logo { height:26px; display:block; margin:0 auto 26px; }
+  h1 { margin:0 0 6px; font-size:22px; font-weight:800; letter-spacing:-.02em; color:#fff; text-align:center; }
+  p.sub { margin:0 0 24px; font-size:14px; color:rgba(255,255,255,.55); text-align:center; }
+  label { display:block; font-size:12px; font-weight:600; color:rgba(255,255,255,.6); margin-bottom:7px; }
+  input { width:100%; box-sizing:border-box; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); border-radius:10px; padding:12px 14px; font-family:inherit; font-size:15px; color:#fff; outline:none; }
+  input:focus { border-color:#8F5BD7; box-shadow:0 0 0 3px rgba(143,91,215,.25); }
+  button { width:100%; margin-top:18px; background:#5C28A4; color:#fff; font-size:15px; font-weight:600; padding:13px; border:none; border-radius:10px; cursor:pointer; font-family:inherit; transition:background .15s; }
+  button:hover { background:#4B1F88; }
+  .err { margin-top:14px; font-size:13px; color:#F87171; text-align:center; min-height:18px; }
+  .hint { margin-top:20px; font-size:12px; color:rgba(255,255,255,.35); text-align:center; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<form class="card" id="form">
+  <img class="logo" src="/assets/quely-logo-dark.svg" alt="Quely">
+  <h1>Sales enablement</h1>
+  <p class="sub">Sign in to manage prospect links and engagement.</p>
+  <label for="pw">Team password</label>
+  <input id="pw" type="password" autocomplete="current-password" placeholder="••••••••" autofocus>
+  <button type="submit">Sign in</button>
+  <div class="err" id="err"></div>
+  <div class="hint">Prospect links (<code>/v/&lt;token&gt;</code>) don't need a login — only this dashboard does.</div>
+</form>
+<script>
+  const form = document.getElementById('form');
+  const err = document.getElementById('err');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const password = document.getElementById('pw').value;
+    try {
+      const r = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      if (r.ok) { window.location.href = '/dashboard'; }
+      else { err.textContent = 'Incorrect password. Try again.'; }
+    } catch (_) { err.textContent = 'Something went wrong. Try again.'; }
+  });
+</script>
+</body>
+</html>
