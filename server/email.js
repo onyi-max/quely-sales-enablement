@@ -8,7 +8,9 @@
  * Configure via env (see .env.example):
  *   SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS
  *   MAIL_FROM   — the From: address
- *   REP_EMAIL   — where rep notifications are sent
+ *   REP_EMAIL   — where rep notifications are sent. Supports MULTIPLE recipients:
+ *                 a comma- or semicolon-separated list, e.g.
+ *                 "person1@quely.io, person2@quely.io" — all get notified.
  *   APP_BASE_URL — used to build absolute prospect links in the email
  */
 'use strict';
@@ -32,28 +34,36 @@ if (nodemailer && SMTP_HOST) {
 }
 
 const baseUrl = (APP_BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
-const repTo = REP_EMAIL || '';
+
+// REP_EMAIL may hold one address or several, separated by commas or semicolons.
+// Parse into a clean list so every recipient is notified (and stray whitespace
+// / empty entries are dropped).
+const repList = (REP_EMAIL || '')
+  .split(/[,;]+/)
+  .map((s) => s.trim())
+  .filter(Boolean);
+const repLabel = repList.join(', ');
 
 function prospectLink(token) { return `${baseUrl}/v/${encodeURIComponent(token)}`; }
 
 async function send(subject, text, html) {
-  if (!repTo) {
+  if (!repList.length) {
     console.log(`[email] (no REP_EMAIL set) would send → "${subject}"`);
     return;
   }
   if (!transporter) {
-    console.log(`[email] (no SMTP configured) would email ${repTo}: "${subject}"\n${text}`);
+    console.log(`[email] (no SMTP configured) would email ${repLabel}: "${subject}"\n${text}`);
     return;
   }
   try {
     await transporter.sendMail({
       from: MAIL_FROM || 'Quely <no-reply@quely.io>',
-      to: repTo,
+      to: repList, // array → every recipient is notified
       subject,
       text,
       html: html || undefined
     });
-    console.log(`[email] sent to ${repTo}: "${subject}"`);
+    console.log(`[email] sent to ${repLabel}: "${subject}"`);
   } catch (err) {
     console.error(`[email] send failed: ${err.message}`);
   }
@@ -98,5 +108,6 @@ module.exports = {
   notifyView,
   notifyQuestion,
   enabled: !!transporter,
-  repConfigured: !!repTo
+  repConfigured: repList.length > 0,
+  recipients: repList
 };
